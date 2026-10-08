@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Shop</title>
+</head>
+<body>
+    <div style="text-align: right;">
+        <a href="{{ url_for('logout') }}">Logout</a>
+    </div>
+    <h1>Welcome, {{ customer_name }}!</h1>
+    <h2>Available Products</h2>
+    <table border="1">
+        <tr>
+            <th>PID</th>
+            <th>Price</th>
+            <th>Discount</th>
+            <th>Discounted Price</th>
+            <th>Name</th>
+            <th>Category</th>
+            <th>Action</th>
+        </tr>
+        {% for product in products %}
+            <tr>
+                <td>{{ product[0] }}</td>
+                <td>${{ "%.2f" | format(product[1]) }}</td>
+                <td>
+                    {% if product[4] %}
+                        {{ product[4] }}% OFF!
+                    {% else %}
+                        None
+                    {% endif %}
+                </td>
+                <td>${{ "%.2f" | format(product[5]) }}</td>
+                <td>{{ product[2] }}</td>
+                <td>{{ product[3] }}</td>
+                <td>
+                    <form method="POST">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <input type="hidden" name="pid" value="{{ product[0] }}">
+                        <input type="submit" name="buy" value="Buy">
+                    </form>
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>

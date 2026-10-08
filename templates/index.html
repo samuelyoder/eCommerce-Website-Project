@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Home{% endblock %}
+{% block content %}
+    <h1>COP4710 E-Commerce Project</h1>
+    <p>Welcome! As an administrator at our company, you bave access to the following pages:</p>
+    <ul>
+        <li><a href="{{ url_for('products') }}">Products</a>: Manage product listings, including price, name, and category.</li>
+        <li><a href="{{ url_for('customers') }}">Customers</a>: View and add customer information.</li>
+        <li><a href="{{ url_for('vendors') }}">Vendors</a>: Manage vendor details and search for specific vendors.</li>
+        <li><a href="{{ url_for('discounts') }}">Discounts</a>: Create discounts and generate personalized product recommendations for customers.</li>
+    </ul>
+{% endblock %}

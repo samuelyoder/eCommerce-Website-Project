@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}Customers{% endblock %}
+{% block content %}
+    <h1>Customers</h1>
+    <table>
+        <tr><th>CID</th><th>Name</th><th>Actions</th></tr>
+        {% for customer in customers %}
+            <tr>
+                <td>{{ customer[0] }}</td>
+                <td>{{ customer[1] }}</td>
+                <td>
+                    <form method="POST" style="display:inline;">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <input type="hidden" name="cid" value="{{ customer[0] }}">
+                        <input type="submit" name="delete" value="Delete">
+                    </form>
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+    <h2>Add Customer</h2>
+    <form method="POST">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <input type="text" name="name" placeholder="Name" required>
+        <input type="submit" name="add" value="Add Customer">
+    </form>
+    <h2>View Purchase History</h2>
+    <form method="POST">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <select name="cid" required>
+            <option value="">Select a Customer</option>
+            {% for customer in customers %}
+                <option value="{{ customer[0] }}">{{ customer[1] }}</option>
+            {% endfor %}
+        </select>
+        <input type="submit" name="view_purchases" value="View Purchases">
+    </form>
+    {% if purchases %}
+        <h3>Purchase History for {{ customer_name }}</h3>
+        <table>
+            <tr><th>PID</th><th>Name</th><th>Price</th><th>Category</th></tr>
+            {% for purchase in purchases %}
+                <tr>
+                    <td>{{ purchase[0] }}</td>
+                    <td>{{ purchase[1] }}</td>
+                    <td>{{ purchase[2] }}</td>
+                    <td>{{ purchase[3] }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+    {% endif %}
+{% endblock %}

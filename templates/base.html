@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{% block title %}{% endblock %}</title>
+</head>
+<body>
+    <nav>
+        <a href="{{ url_for('login') }}">Log Out</a> |
+        {% if session['user_type'] == 'Admin' %}
+            <a href="{{ url_for('products') }}">Products</a> |
+            <a href="{{ url_for('customers') }}">Customers</a> |
+            <a href="{{ url_for('vendors') }}">Vendors</a> |
+            <a href="{{ url_for('discounts') }}">Discounts</a>
+        {% endif %}
+        {% if session['user_type'] == 'Customer' %}
+            <a href="{{ url_for('shop') }}">Shop</a>
+        {% endif %}
+    </nav>
+    <hr>
+    {% block content %}{% endblock %}
+</body>
+</html>

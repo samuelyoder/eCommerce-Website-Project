@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Discounts</title>
+</head>
+<body>
+    <div style="text-align: right;">
+        <a href="{{ url_for('logout') }}">Logout</a>
+    </div>
+    <h1>Discounts</h1>
+    <p>Discounts are automatically assigned based on purchase history:</p>
+    <ul>
+        <li>15% off the most-purchased category (requires 5+ purchases in category, 5 total purchases).</li>
+        <li>10% off the second most-purchased category (requires 5+ purchases in category, 10 total purchases).</li>
+        <li>5% off the third most-purchased category (requires 5+ purchases in category, 20 total purchases).</li>
+    </ul>
+    
+    <h2>Current Discounts</h2>
+    <table border="1">
+        <tr>
+            <th>DID</th>
+            <th>Percentage</th>
+            <th>Type</th>
+            <th>Category</th>
+            <th>Customer</th>
+            <th>Action</th>
+        </tr>
+        {% for discount in discounts %}
+            <tr>
+                <td>{{ discount[0] }}</td>
+                <td>{{ discount[1] }}%</td>
+                <td>{{ discount[2] }}</td>
+                <td>{{ discount[3] if discount[3] else 'N/A' }}</td>
+                <td>{{ discount[5] if discount[5] else 'N/A' }}</td>
+                <td>
+                    <form method="POST">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <input type="hidden" name="did" value="{{ discount[0] }}">
+                        <input type="submit" name="delete" value="Delete">
+                    </form>
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+    
+    <h2>Add Global Discount</h2>
+    <form method="POST">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <input type="number" step="0.01" name="percentage" placeholder="Percentage" required>
+        <input type="text" name="type" placeholder="Type (e.g., Seasonal)" required>
+        <input type="submit" name="add" value="Add Global Discount">
+    </form>
+    
+    <h2>Generate Customer-Specific Discounts</h2>
+    <form method="POST">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <select name="cid" required>
+            <option value="">Select Customer</option>
+            {% for customer in customers %}
+                <option value="{{ customer[0] }}">{{ customer[1] }}</option>
+            {% endfor %}
+        </select>
+        <input type="submit" name="recommend" value="Generate Recommendations">
+    </form>
+    
+    {% if recommendations %}
+        <h2>Recommendations for {{ customer_name_rec }}</h2>
+        <table border="1">
+            <tr>
+                <th>PID</th>
+                <th>Name</th>
+                <th>Price</th>
+                <th>Category</th>
+                <th>Purchase Count</th>
+                <th>Current Discount</th>
+                <th>Action</th>
+            </tr>
+            {% for rec in recommendations %}
+                <tr>
+                    <td>{{ rec.PID }}</td>
+                    <td>{{ rec.Name }}</td>
+                    <td>${{ "%.2f" | format(rec.Price) }}</td>
+                    <td>{{ rec.Category }}</td>
+                    <td>{{ rec.PurchaseCount }}</td>
+                    <td>{{ rec.Discount }}</td>
+                    <td>
+                        {% if rec.PurchaseCount >= 5 %}
+                            <form method="POST">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <input type="hidden" name="cid" value="{{ rec.CID }}">
+                                <input type="hidden" name="category" value="{{ rec.Category }}">
+                                <input type="submit" name="add_discount" value="Add Discount">
+                            </form>
+                        {% else %}
+                            Need {{ 5 - rec.PurchaseCount }} more purchases
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+    {% endif %}
+    
+    {% if discount_message %}
+        <p>{{ discount_message }}</p>
+    {% endif %}
+</body>
+</html>

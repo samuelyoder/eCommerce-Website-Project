@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}Vendors{% endblock %}
+{% block content %}
+    <h1>Vendors</h1>
+    <form method="GET">
+        <input type="text" name="search" placeholder="Search vendors...">
+        <input type="submit" value="Search">
+    </form>
+    <table>
+        <tr><th>VID</th><th>Name</th><th>Actions</th></tr>
+        {% for vendor in vendors %}
+            <tr>
+                <td>{{ vendor[0] }}</td>
+                <td>{{ vendor[1] }}</td>
+                <td>
+                    <form method="POST" style="display:inline;">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <input type="hidden" name="vid" value="{{ vendor[0] }}">
+                        <input type="submit" name="delete" value="Delete">
+                    </form>
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+    <h2>Add Vendor</h2>
+    <form method="POST">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <input type="text" name="name" placeholder="Name" required>
+        <input type="submit" name="add" value="Add Vendor">
+    </form>
+    <h2>View Vendor Performance</h2>
+    <form method="POST">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <select name="vid" required>
+            <option value="">Select a Vendor</option>
+            {% for vendor in vendors %}
+                <option value="{{ vendor[0] }}">{{ vendor[1] }}</option>
+            {% endfor %}
+        </select>
+        <input type="submit" name="view_performance" value="View Performance">
+    </form>
+    {% if performance %}
+        <h3>Performance for {{ vendor_name }}</h3>
+        <ul>
+            <li>Total Products Supplied: {{ performance.total_products }}</li>
+            <li>Total Sales: {{ performance.total_sales }}</li>
+            <li>Revenue Generated: ${{ "%.2f" | format(performance.revenue) }}</li>
+            <li>Most Popular Product: {{ performance.popular_product_name }} ({{ performance.popular_product_purchases }} purchases)</li>
+        </ul>
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}Products{% endblock %}
+{% block content %}
+    <h1>Products</h1>
+    <form method="GET">
+        <input type="text" name="search" placeholder="Search products...">
+        <input type="submit" value="Search">
+    </form>
+    <table>
+        <tr><th>PID</th><th>Price</th><th>Name</th><th>Category</th><th>Vendor</th><th>Actions</th></tr>
+        {% for product in products %}
+            <tr>
+                <td>{{ product[0] }}</td>
+                <td>${{ product[1] }}</td>
+                <td>{{ product[2] }}</td>
+                <td>{{ product[3] }}</td>
+                <td>
+                    {% if product[4] %}
+                        {{ product[4] }}
+                    {% else %}
+                        None
+                    {% endif %}
+                </td>
+                <td>
+                    <form method="POST" style="display:inline;">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <input type="hidden" name="pid" value="{{ product[0] }}">
+                        <input type="number" step="0.01" name="price" value="{{ product[1] }}">
+                        <input type="submit" name="update" value="Update Price">
+                    </form>
+                    <form method="POST" style="display:inline;">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <input type="hidden" name="pid" value="{{ product[0] }}">
+                        <input type="submit" name="delete" value="Delete">
+                    </form>
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+    <h2>Add Product</h2>
+    <form method="POST">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <input type="number" step="0.01" name="price" placeholder="Price" required>
+        <input type="text" name="name" placeholder="Name" required>
+        <input type="text" name="category" placeholder="Category" required>
+        <input type="submit" name="add" value="Add Product">
+    </form>
+{% endblock %}
